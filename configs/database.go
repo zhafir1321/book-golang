@@ -1,6 +1,7 @@
 package configs
 
 import (
+	"book-golang/models"
 	"log"
 
 	"gorm.io/driver/mysql"
@@ -23,6 +24,8 @@ func ConnectDB() {
 	if err != nil {
 		panic("Failed to connect to database!")
 	}
+
+	db.AutoMigrate(&models.User{}, &models.Book{})
 	
 	DB = db
 

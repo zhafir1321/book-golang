@@ -5,8 +5,8 @@ import (
 	"net/http"
 )
 
-type ResponseToken struct {
-	Token any `json:"token"`
+type ResponseData struct {
+	Data any `json:"data"`
 }
 
 type ResponseError struct {
@@ -24,8 +24,8 @@ func Response(w http.ResponseWriter, code int, message string, payload interface
 	var response any
 
 	if payload != nil {
-		response = &ResponseToken{
-			Token: payload,
+		response = &ResponseData{
+			Data: payload,
 		}
 	} else {
 		response = &ResponseError{

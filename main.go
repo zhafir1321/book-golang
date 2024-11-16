@@ -17,6 +17,7 @@ func main() {
 	router := r.PathPrefix("/api").Subrouter()
 
 	routes.AuthRoutes(router)
+	routes.BookRoutes(router)
 
 	log.Println("Server started at :8080")
 	http.ListenAndServe(":8080", router)

@@ -1,11 +1,11 @@
 package models
 
 type User struct {
-	ID       uint `gorm:"primaryKey"`
-	Name     string
-	Email    string `gorm:"unique"`
-	Password string
-	Role     string
+	ID       uint   `gorm:"primaryKey"`
+	Name     string `gorm:"not null"`
+	Email    string `gorm:"unique;not null"`
+	Password string `gorm:"not null"`
+	Role     string `gorm:"not null"`
 }
 
 type Register struct {

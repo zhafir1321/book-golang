@@ -31,7 +31,16 @@ func CreateBook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	title := r.Form.Get("title")
+	if title == "" {
+		helpers.Response(w, 400, "Title is required", nil)
+		return
+	}
+
 	category := r.Form.Get("category")
+	if category == "" {
+		helpers.Response(w, 400, "Category is required", nil)
+		return
+	}
 
 
 	book := models.Book{

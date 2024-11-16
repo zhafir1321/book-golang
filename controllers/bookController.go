@@ -69,3 +69,66 @@ func GetBook(w http.ResponseWriter, r *http.Request) {
 	helpers.Response(w, 200, "Success get book", book)
 
 }
+
+func DeleteBook(w http.ResponseWriter, r *http.Request) {
+	var book models.Book
+	
+	params := mux.Vars(r)
+
+	bookID := params["id"]
+
+	if err := configs.DB.First(&book, bookID).Error; err != nil {
+		helpers.Response(w, 500, err.Error(), nil)
+		return
+	}
+
+	if err := configs.DB.Delete(&book).Error; err != nil {
+		helpers.Response(w, 500, err.Error(), nil)
+		return
+	}
+
+	helpers.Response(w, 200, "Success delete book", nil)
+}
+
+func UpdateBook(w http.ResponseWriter, r *http.Request) {
+	var book models.Book
+	
+	params := mux.Vars(r)
+
+	bookID := params["id"]
+
+	if err := configs.DB.First(&book, bookID).Error; err != nil {
+		helpers.Response(w, 500, err.Error(), nil)
+		return
+	}
+
+	err := r.ParseForm()
+	if err != nil {
+		helpers.Response(w, 500, err.Error(), nil)
+		return
+	}
+
+	if title := r.Form.Get("title"); title != "" {
+		book.Title = title
+	}
+
+	if category := r.Form.Get("category"); category != "" {
+		book.Category = category
+	}
+
+	if stock := r.Form.Get("stock"); stock != "" {
+		stockInt, err := strconv.Atoi(stock)
+		if err != nil {
+			helpers.Response(w, 500, "Invalid stock value", nil)
+			return
+		}
+		book.Stock = stockInt
+	}
+
+	if err := configs.DB.Save(&book).Error; err != nil {
+		helpers.Response(w, 500, err.Error(), nil)
+		return
+	}
+
+	helpers.Response(w, 200, "Success update book", nil)
+}

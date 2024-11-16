@@ -11,7 +11,7 @@ import (
 var DB *gorm.DB
 
 func ConnectDB() {
-	db, err := gorm.Open(mysql.Open("root:root@tcp(localhost:3306)/?parseTime=true"), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open("root:root@tcp(mysql_db:3306)/?parseTime=true"), &gorm.Config{})
 
 	db.Exec("CREATE DATABASE IF NOT EXISTS `go-book`")
 
@@ -19,7 +19,7 @@ func ConnectDB() {
 		panic("Failed to connect to database!")
 	}
 
-	db, err = gorm.Open(mysql.Open("root:root@tcp(localhost:3306)/go-book?parseTime=true"), &gorm.Config{})
+	db, err = gorm.Open(mysql.Open("root:root@tcp(mysql_db:3306)/go-book?parseTime=true"), &gorm.Config{})
 
 	if err != nil {
 		panic("Failed to connect to database!")

@@ -121,3 +121,29 @@ func UpdateBook(w http.ResponseWriter, r *http.Request) {
 
 	helpers.Response(w, 200, "Success update book", nil)
 }
+
+func SearchBookByTitle(w http.ResponseWriter, r *http.Request) {
+	var books []models.Book
+
+	title := r.URL.Query().Get("title")
+
+	if err := configs.DB.Where("title LIKE ?", "%"+title+"%").Find(&books).Error; err != nil {
+		helpers.Response(w, 500, err.Error(), nil)
+		return
+	}
+
+	helpers.Response(w, 200, "Success get books", books)
+}
+
+func FilterBookByCategory(w http.ResponseWriter, r *http.Request) {
+	var books []models.Book
+
+	category := r.URL.Query().Get("category")
+
+	if err := configs.DB.Where("category = ?", category).Find(&books).Error; err != nil {
+		helpers.Response(w, 500, err.Error(), nil)
+		return
+	}
+
+	helpers.Response(w, 200, "Success get books", books)
+}

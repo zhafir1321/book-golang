@@ -15,6 +15,12 @@ import (
 
 func CreateBorrow(w http.ResponseWriter, r *http.Request) {
 
+	userInfo, ok := r.Context().Value("userInfo").(*helpers.MyCustomClaims)
+	if !ok {
+		helpers.Response(w, 400, "Unauthorized", nil)
+		return
+	}
+
 	bookParams := mux.Vars(r)
 	bookID, err := strconv.ParseUint(bookParams["bookId"], 10, 64)
 	if err != nil {
@@ -22,11 +28,13 @@ func CreateBorrow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userInfo, ok := r.Context().Value("userInfo").(*helpers.MyCustomClaims)
-	if !ok {
-		helpers.Response(w, 400, "Unauthorized", nil)
+	
+	book := models.Book{}
+	if err := configs.DB.First(&book, "id = ?", bookID).Error; err != nil {
+		helpers.Response(w, 404, "Book not found", nil)
 		return
 	}
+
 
 	borrow := models.BorrowReturn{
 		UserID: userInfo.ID,
@@ -41,11 +49,6 @@ func CreateBorrow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	book := models.Book{}
-	if err := configs.DB.First(&book, "id = ?", bookID).Error; err != nil {
-		helpers.Response(w, 500, err.Error(), nil)
-		return
-	}
 
 	book.Stock = false
 	book.Borrow = true
@@ -65,22 +68,23 @@ func CreateBorrow(w http.ResponseWriter, r *http.Request) {
 
 func ReturnBook(w http.ResponseWriter, r *http.Request) {
 	
-	bookParams := mux.Vars(r)
-	bookID, err := strconv.ParseUint(bookParams["bookId"], 10, 64)
-	if err != nil {
-		helpers.Response(w, 400, "Invalid book ID", nil)
-		return
-	}
-
 	userInfo, ok := r.Context().Value("userInfo").(*helpers.MyCustomClaims)
 	if !ok {
 		helpers.Response(w, 400, "Unauthorized", nil)
 		return
 	}
 
+	bookParams := mux.Vars(r)
+	id, err := strconv.ParseUint(bookParams["id"], 10, 64)
+	if err != nil {
+		helpers.Response(w, 400, "Invalid book ID", nil)
+		return
+	}
+
+
 	borrow := models.BorrowReturn{}
-	if err := configs.DB.First(&borrow, "user_id = ? AND book_id = ?", userInfo.ID, bookID).Error; err != nil {
-		helpers.Response(w, 500, "Book not found", nil)
+	if err := configs.DB.First(&borrow, "user_id = ? AND book_id = ?", userInfo.ID, id).Error; err != nil {
+		helpers.Response(w, 404, "ID not exist", nil)
 		return
 	}
 
@@ -91,6 +95,8 @@ func ReturnBook(w http.ResponseWriter, r *http.Request) {
 		helpers.Response(w, 500, err.Error(), nil)
 		return
 	}
+
+	bookID := borrow.BookID
 
 	book := models.Book{}
 	if err := configs.DB.First(&book, "id = ?", bookID).Error; err != nil {

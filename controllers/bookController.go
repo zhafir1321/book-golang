@@ -5,7 +5,6 @@ import (
 	"book-golang/helpers"
 	"book-golang/models"
 	"net/http"
-	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -33,17 +32,14 @@ func CreateBook(w http.ResponseWriter, r *http.Request) {
 
 	title := r.Form.Get("title")
 	category := r.Form.Get("category")
-	stock := r.Form.Get("stock")
-	stockInt, err := strconv.Atoi(stock)
-	if err != nil {
-		helpers.Response(w, 500, "Invalid stock value", nil)
-		return
-	}
+
 
 	book := models.Book{
 		Title:    title,
 		Category: category,
-		Stock:    stockInt,
+		Stock:    true,
+		Borrow:  false,
+		Return:  true,
 	}
 
 	if err := configs.DB.Create(&book).Error; err != nil {
@@ -116,14 +112,7 @@ func UpdateBook(w http.ResponseWriter, r *http.Request) {
 		book.Category = category
 	}
 
-	if stock := r.Form.Get("stock"); stock != "" {
-		stockInt, err := strconv.Atoi(stock)
-		if err != nil {
-			helpers.Response(w, 500, "Invalid stock value", nil)
-			return
-		}
-		book.Stock = stockInt
-	}
+
 
 	if err := configs.DB.Save(&book).Error; err != nil {
 		helpers.Response(w, 500, err.Error(), nil)

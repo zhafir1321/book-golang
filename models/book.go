@@ -4,7 +4,9 @@ type Book struct {
 	ID       uint `gorm:"primaryKey"`
 	Title    string
 	Category string
-	Stock    int
+	Stock    bool
+	Borrow   bool
+	Return   bool
 }
 
 type CreateBook struct {

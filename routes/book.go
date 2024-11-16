@@ -17,5 +17,6 @@ func BookRoutes(r *mux.Router) {
 	router.Handle("/", middlewares.Authorization(http.HandlerFunc(controllers.CreateBook))).Methods("POST")
 	router.Handle("/{id}", middlewares.Authorization(http.HandlerFunc(controllers.UpdateBook))).Methods("PUT")
 	router.Handle("/{id}", middlewares.Authorization(http.HandlerFunc(controllers.DeleteBook))).Methods("DELETE")
+	router.HandleFunc("/search", controllers.SearchBookByTitle).Methods("GET")
 
 }

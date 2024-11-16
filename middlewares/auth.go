@@ -3,13 +3,9 @@ package middlewares
 import (
 	"book-golang/helpers"
 	"context"
-	"log"
 	"net/http"
 )
 
-type contextKey string
-
-const userInfoKey contextKey = "userInfo"
 
 func Authentication(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -27,7 +23,7 @@ func Authentication(next http.Handler) http.Handler {
 			return
 		} 
 
-		ctx := context.WithValue(r.Context(), userInfoKey, user)
+		ctx := context.WithValue(r.Context(), "userInfo", user)
 
 
 		next.ServeHTTP(w, r.WithContext(ctx))
@@ -37,7 +33,7 @@ func Authentication(next http.Handler) http.Handler {
 
 func Authorization(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		userInfo := r.Context().Value(userInfoKey)
+		userInfo := r.Context().Value("userInfo")
 
 		if userInfo == nil {
 			helpers.Response(w, 401, "Unauthorized", nil)
@@ -51,7 +47,7 @@ func Authorization(next http.Handler) http.Handler {
 			return
 		}
 
-		log.Printf("User Role: %s", user.Role)
+		
 
 		next.ServeHTTP(w, r)
 	})

@@ -6,6 +6,8 @@ import (
 	"book-golang/models"
 	"net/http"
 	"strconv"
+
+	"github.com/gorilla/mux"
 )
 
 
@@ -50,7 +52,20 @@ func CreateBook(w http.ResponseWriter, r *http.Request) {
 	}
 
 	helpers.Response(w, 200, "Success create book", nil)
-	
+}
 
+func GetBook(w http.ResponseWriter, r *http.Request) {
+	var book models.Book
+	
+	params := mux.Vars(r)
+
+	bookID := params["id"]
+
+	if err := configs.DB.First(&book, bookID).Error; err != nil {
+		helpers.Response(w, 500, err.Error(), nil)
+		return
+	}
+
+	helpers.Response(w, 200, "Success get book", book)
 
 }
